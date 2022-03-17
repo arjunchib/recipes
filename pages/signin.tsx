@@ -13,7 +13,7 @@ export default function SignIn() {
   };
 
   return (
-    <main>
+    <>
       <div className="shadow-sm max-w-xs rounded-xl overflow-hidden border-black border">
         <input
           className="w-3/4 h-full px-3 py-2  border-0 focus:ring-0"
@@ -28,6 +28,6 @@ export default function SignIn() {
           Sign In
         </button>
       </div>
-    </main>
+    </>
   );
 }

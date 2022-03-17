@@ -31,28 +31,36 @@ export default function Recipes() {
   function tbody(recipes: Recipe[]) {
     return recipes.map((r) => (
       <tr key={r.id}>
-        <td>{r.name}</td>
-        <td>
-          <Link href={`/recipes/${r.id}`}>view</Link>
+        <td className="p-3">{r.name}</td>
+        <td className="p-3">
+          <Link href={`/recipes/${r.id}`}>
+            <a>view</a>
+          </Link>
         </td>
       </tr>
     ));
   }
 
   return (
-    <main>
-      <div>
-        <h1>Recipes</h1>
-        <button onClick={handleNewRecipe}>New recipe</button>
+    <>
+      <div className="flex justify-between items-center">
+        <h1 className="text-2xl">My Recipes</h1>
+        <button
+          className="rounded bg-blue-600 text-white px-3 py-1 hover:bg-blue-800 transition-colors"
+          onClick={handleNewRecipe}
+        >
+          New recipe
+        </button>
       </div>
-      <table>
-        <thead>
-          <tr>
-            <th>Name</th>
+      <table className="drop-shadow bg-white w-full rounded-lg my-4">
+        <thead className="border-b">
+          <tr className="align-left text-left">
+            <th className="p-3">Name</th>
+            <th className="p-3">Link</th>
           </tr>
         </thead>
-        <tbody>{tbody(recipes)}</tbody>
+        <tbody className="divide-y">{tbody(recipes)}</tbody>
       </table>
-    </main>
+    </>
   );
 }
