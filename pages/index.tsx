@@ -22,6 +22,7 @@ export default function Home() {
         </Link>
       </nav>
       {session ? <p>Welcome {session.user.email}</p> : <p>Not logged in</p>}
+      {session && <Link href="/recipes/">recipes</Link>}
     </main>
   );
 }
