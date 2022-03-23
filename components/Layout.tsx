@@ -16,20 +16,24 @@ export default function Layout({ children }) {
   return (
     <>
       <header className="bg-white py-2 drop-shadow-sm border-b border-gray-100">
-        <div className="container flex gap-5 items-center">
-          <Link href="">
+        <div className="container flex gap-5 items-center max-w-6xl">
+          <Link href="/">
             <a className="font-serif font-semibold text-2xl italic">Recipes</a>
           </Link>
           <nav className="flex flex-auto items-center">
             <ul>
               {session && (
                 <li>
-                  <Link href="/recipes">My Recipes</Link>
+                  <Link href="/recipes">
+                    <a>My Recipes</a>
+                  </Link>
                 </li>
               )}
             </ul>
           </nav>
-          <Link href="/signin">Sign In</Link>
+          <Link href="/signin">
+            <a>Sign In</a>
+          </Link>
         </div>
       </header>
       <main className="container py-10 max-w-3xl">{children}</main>
