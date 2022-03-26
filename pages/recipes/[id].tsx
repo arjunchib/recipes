@@ -1,63 +1,99 @@
 import { useRouter } from "next/router";
-import { ChangeEvent, useEffect, useState } from "react";
+import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import IngredientField from "../../components/IngredientField";
 import { supabase } from "../../util/supabaseClient";
+
+type SupabaseRecipe = {
+  id: string;
+  name: string;
+  content: string;
+  author: string;
+  recipe_ingredients: {
+    quantity: string;
+    unit: string;
+    ingredients: {
+      name: string;
+    };
+  }[];
+};
 
 type Recipe = {
   id: string;
   name: string;
+  content: string;
   author: string;
+  ingredients: Ingredient[];
 };
 
-type Ingredient = {
+interface Ingredient {
   quantity: string;
   unit: string;
-  ingredient: string;
-};
+  name: string;
+}
 
 export default function Recipe() {
   const router = useRouter();
-  const { id } = router.query;
-
+  const id = router.query.id as string;
   const [recipe, setRecipe] = useState<Recipe>();
-  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
 
   useEffect(() => {
     if (!id) return;
     supabase
-      .from<Recipe>("recipes")
-      .select("name, author, id")
+      .from<SupabaseRecipe>("recipes")
+      .select(
+        "name, author, id, content, recipe_ingredients(quantity, unit, ingredients(name))"
+      )
       .eq("id", id as string)
       .maybeSingle()
       .then(({ data, error }) => {
-        setRecipe(data);
+        console.log(data || error);
+        const { id, name, content, author } = data;
+        const ingredients = data.recipe_ingredients.map((ri) => {
+          const { quantity, unit } = ri;
+          return { quantity, unit, name: ri.ingredients.name };
+        });
+        setRecipe({ id, name, content, author, ingredients });
       });
   }, [id]);
 
-  const onIngredientChange = (index: number, name: string, value: string) => {
-    ingredients[index][name] = value;
-  };
-
   const onNameChange = (e: ChangeEvent) => {
-    console.log((e.target as HTMLInputElement).value);
     recipe.name = (e.target as HTMLInputElement).value;
     setRecipe({ ...recipe });
   };
 
-  const ingredientList = ingredients.map((ing, idx) => (
+  const onContentChange = (e: ChangeEvent) => {
+    recipe.content = (e.target as HTMLInputElement).value;
+    setRecipe({ ...recipe });
+  };
+
+  const onIngredientChange = (index: number, value: Ingredient) => {
+    recipe.ingredients[index] = value;
+    setRecipe({ ...recipe });
+  };
+
+  const handleSave = async (e: FormEvent) => {
+    e.preventDefault();
+    await supabase
+      .from<Recipe>("recipes")
+      .update({
+        name: recipe.name,
+        content: recipe.content,
+      })
+      .eq("id", id);
+  };
+
+  const ingredientList = recipe?.ingredients.map((ing, idx) => (
     <IngredientField
       key={idx}
       value={ing}
-      onValueChange={(name: string, value: string) =>
-        onIngredientChange(idx, name, value)
-      }
+      onChange={(value) => onIngredientChange(idx, value)}
     />
   ));
 
   if (!recipe) return <div>Loading...</div>;
 
   return (
-    <form>
+    <form onSubmit={handleSave}>
       <div className="pb-6">
         <label htmlFor="name" className="block mb-1">
           Title
@@ -73,10 +109,6 @@ export default function Recipe() {
       <div className="pb-6">
         <label className="block mb-1">Ingredients</label>
         {ingredientList}
-        <IngredientField
-          value={{ quantity: "", unit: "", ingredient: "" }}
-          onValueChange={(name: string, value: string) => {}}
-        />
       </div>
       <div className="pb-6">
         <label htmlFor="content" className="block mb-1">
@@ -85,6 +117,8 @@ export default function Recipe() {
         <textarea
           className="shadow rounded-lg block w-full"
           id="content"
+          value={recipe?.content}
+          onChange={onContentChange}
         ></textarea>
       </div>
       <button className="float-right bg-indigo-700 text-white px-6 py-2 rounded-lg border border-indigo-900 hover:bg-indigo-800 transition-colors shadow-md">

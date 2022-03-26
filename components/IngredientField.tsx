@@ -1,19 +1,25 @@
-import { ChangeEvent } from "react";
+import { ChangeEvent, useDebugValue } from "react";
+
+interface Ingredient {
+  quantity: string;
+  unit: string;
+  name: string;
+}
 
 interface Props {
-  value: {
-    quantity: string;
-    unit: string;
-    ingredient: string;
-  };
-  onValueChange: (name: string, value: string) => void;
+  value: Ingredient;
+  onChange: (value: Ingredient) => void;
 }
 
 export default function IngredientField(props: Props) {
   const id = 0;
 
   const handleChange = (name: string, e: ChangeEvent) => {
-    props.onValueChange(name, (e.target as HTMLInputElement).value);
+    const newValue = {
+      ...props.value,
+      [name]: (e.target as HTMLInputElement).value,
+    };
+    props.onChange(newValue);
   };
 
   return (
@@ -62,8 +68,8 @@ export default function IngredientField(props: Props) {
           type="text"
           id={`ingredient-${id}`}
           placeholder="milk"
-          value={props.value.ingredient}
-          onChange={(e) => handleChange("ingredient", e)}
+          value={props.value.name}
+          onChange={(e) => handleChange("name", e)}
         />
       </div>
       <button

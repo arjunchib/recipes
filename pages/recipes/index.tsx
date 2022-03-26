@@ -6,6 +6,7 @@ type Recipe = {
   id: string;
   name: string;
   author: string;
+  content: string;
 };
 
 export default function Recipes() {
@@ -23,7 +24,11 @@ export default function Recipes() {
   const handleNewRecipe = async () => {
     const { data, error } = await supabase
       .from<Recipe>("recipes")
-      .insert({ name: "Untitled", author: supabase.auth.user().id });
+      .insert({
+        name: "Untitled",
+        content: "",
+        author: supabase.auth.user().id,
+      });
     if (error) throw error;
     setRecipes([...recipes, data[0]]);
   };
