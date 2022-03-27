@@ -52,6 +52,11 @@ export default function Recipe() {
           const { quantity, unit } = ri;
           return { quantity, unit, name: ri.ingredients.name };
         });
+        ingredients.push({
+          quantity: "",
+          unit: "",
+          name: "",
+        });
         setRecipe({ id, name, content, author, ingredients });
       });
   }, [id]);
@@ -68,11 +73,62 @@ export default function Recipe() {
 
   const onIngredientChange = (index: number, value: Ingredient) => {
     recipe.ingredients[index] = value;
+    if (
+      recipe.ingredients.length === 0 ||
+      recipe.ingredients[recipe.ingredients.length - 1].name
+    ) {
+      recipe.ingredients.push({
+        quantity: "",
+        unit: "",
+        name: "",
+      });
+    }
     setRecipe({ ...recipe });
   };
 
   const handleSave = async (e: FormEvent) => {
     e.preventDefault();
+
+    // TODO: Should probably turn into a postgres function when avaialable
+
+    // Remove empty recipes
+    recipe.ingredients = recipe.ingredients.filter((i) => i.name);
+
+    // Get current ingredients
+    let { data, error } = await supabase
+      .from("ingredients")
+      .select("name")
+      .in(
+        "name",
+        recipe.ingredients.map((i) => i.name)
+      );
+    const currentIngredients = data.map((i) => i.name);
+
+    // Insert new ingredients
+    const newIngredients = recipe.ingredients
+      .filter((i) => !currentIngredients.includes(i.name))
+      .map((i) => {
+        return { name: i.name };
+      });
+    ({ data, error } = await supabase
+      .from("ingredients")
+      .insert(newIngredients));
+
+    // Upsert recipes_ingredients
+    const recipe_ingredients = recipe.ingredients.map((i, idx) => {
+      return {
+        recipe_id: recipe.id,
+        ingredient_name: i.name,
+        quantity: i.quantity,
+        unit: i.unit,
+        order: idx,
+      };
+    });
+    ({ data, error } = await supabase
+      .from("recipe_ingredients")
+      .upsert(recipe_ingredients));
+
+    // Update recipe
     await supabase
       .from<Recipe>("recipes")
       .update({
