@@ -19,7 +19,7 @@ CREATE TABLE IF NOT EXISTS public.recipes
 TABLESPACE pg_default;
 
 ALTER TABLE IF EXISTS public.recipes
-    OWNER to supabase_admin;
+    OWNER to postgres;
 
 ALTER TABLE IF EXISTS public.recipes
     ENABLE ROW LEVEL SECURITY;
