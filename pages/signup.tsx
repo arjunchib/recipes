@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { useRef } from "react";
 import { supabase } from "../util/supabaseClient";
@@ -18,6 +19,12 @@ export default function SignUp() {
 
   return (
     <>
+      <header className="pb-6">
+        <h1 className="text-2xl">Sign In</h1>
+        <p>
+          Already have an account? <Link href="/signin">Sign in</Link>
+        </p>
+      </header>
       <div className="pb-6">
         <label htmlFor="email" className="block mb-1">
           Email
