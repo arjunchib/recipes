@@ -2,6 +2,8 @@ import { useRouter } from "next/router";
 import { ChangeEvent, FormEvent, useEffect, useState } from "react";
 import IngredientField from "../../components/IngredientField";
 import { supabase } from "../../util/supabaseClient";
+import { ArrowSmLeftIcon } from "@heroicons/react/solid";
+import Link from "next/link";
 
 type SupabaseRecipe = {
   id: string;
@@ -149,37 +151,44 @@ export default function Recipe() {
   if (!recipe) return <div>Loading...</div>;
 
   return (
-    <form onSubmit={handleSave}>
-      <div className="pb-6">
-        <label htmlFor="name" className="block mb-1">
-          Title
-        </label>
-        <input
-          className="shadow rounded-lg block w-full"
-          id="name"
-          type="text"
-          value={recipe?.name}
-          onChange={onNameChange}
-        />
-      </div>
-      <div className="pb-6">
-        <label className="block mb-1">Ingredients</label>
-        {ingredientList}
-      </div>
-      <div className="pb-6">
-        <label htmlFor="content" className="block mb-1">
-          Content
-        </label>
-        <textarea
-          className="shadow rounded-lg block w-full"
-          id="content"
-          value={recipe?.content}
-          onChange={onContentChange}
-        ></textarea>
-      </div>
-      <button className="float-right bg-indigo-700 text-white px-6 py-2 rounded-lg border border-indigo-900 hover:bg-indigo-800 transition-colors shadow-md">
-        Save
-      </button>
-    </form>
+    <>
+      <Link href="/recipes">
+        <a className="flex mb-2 -ml-1 link">
+          <ArrowSmLeftIcon className="h-[1.5em]" />
+          <div>Recipes</div>
+        </a>
+      </Link>
+      <h1 className="text-2xl mb-6">{recipe?.name}</h1>
+      <form onSubmit={handleSave}>
+        <div className="pb-6">
+          <label htmlFor="name" className="block mb-1">
+            Title
+          </label>
+          <input
+            className="shadow rounded-lg block w-full"
+            id="name"
+            type="text"
+            value={recipe?.name}
+            onChange={onNameChange}
+          />
+        </div>
+        <div className="pb-6">
+          <label className="block mb-1">Ingredients</label>
+          {ingredientList}
+        </div>
+        <div className="pb-6">
+          <label htmlFor="content" className="block mb-1">
+            Content
+          </label>
+          <textarea
+            className="shadow rounded-lg block w-full"
+            id="content"
+            value={recipe?.content}
+            onChange={onContentChange}
+          ></textarea>
+        </div>
+        <button className="float-right btn btn-primary">Save</button>
+      </form>
+    </>
   );
 }

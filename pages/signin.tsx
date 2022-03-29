@@ -22,7 +22,10 @@ export default function SignIn() {
       <header className="pb-6">
         <h1 className="text-2xl">Sign In</h1>
         <p>
-          No account yet? <Link href="/signup">Sign up</Link>
+          No account yet?{" "}
+          <Link href="/signup">
+            <a className="link">Sign up</a>
+          </Link>
         </p>
       </header>
       <div className="pb-6">
@@ -49,10 +52,7 @@ export default function SignIn() {
           ref={password}
         />
       </div>
-      <button
-        className="bg-black text-white hover:bg-gray-700 px-6 py-2 rounded-lg border transition-colors shadow-md float-right"
-        onClick={handleSignIn}
-      >
+      <button className="btn btn-primary float-right" onClick={handleSignIn}>
         Sign In
       </button>
     </>

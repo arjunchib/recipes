@@ -1,21 +1,31 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { supabase } from "../../util/supabaseClient";
+import { ChevronRightIcon } from "@heroicons/react/solid";
 
-type Recipe = {
+type SupabaseRecipe = {
   id: string;
   name: string;
-  author: string;
   content: string;
+  author: string;
+  recipe_ingredients: {
+    quantity: string;
+    unit: string;
+    ingredients: {
+      name: string;
+    };
+  }[];
 };
 
 export default function Recipes() {
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
+  const [recipes, setRecipes] = useState<SupabaseRecipe[]>([]);
 
   useEffect(() => {
     supabase
-      .from<Recipe>("recipes")
-      .select("*")
+      .from<SupabaseRecipe>("recipes")
+      .select(
+        "name, author, id, content, recipe_ingredients(quantity, unit, ingredients(name))"
+      )
       .then(({ data, error }) => {
         setRecipes(data);
       });
@@ -23,7 +33,7 @@ export default function Recipes() {
 
   const handleNewRecipe = async () => {
     const { data, error } = await supabase
-      .from<Recipe>("recipes")
+      .from<SupabaseRecipe>("recipes")
       .insert({
         name: "Untitled",
         content: "",
@@ -33,39 +43,37 @@ export default function Recipes() {
     setRecipes([...recipes, data[0]]);
   };
 
-  function tbody(recipes: Recipe[]) {
-    return recipes.map((r) => (
-      <tr key={r.id}>
-        <td className="p-3">{r.name}</td>
-        <td className="p-3">
-          <Link href={`/recipes/${r.id}`}>
-            <a>view</a>
-          </Link>
-        </td>
-      </tr>
-    ));
+  function list(recipes: SupabaseRecipe[]) {
+    return recipes.map((r) => {
+      const ingredients = r.recipe_ingredients.map((ri) => ri.ingredients.name);
+      const desc = ingredients.length ? (
+        <em className="text-gray-400"> - {ingredients.join(", ")}</em>
+      ) : undefined;
+      return (
+        <Link key={r.id} href={`/recipes/${r.id}`}>
+          <a className="group p-3 hover:shadow flex justify-between">
+            <div>
+              {r.name}
+              {desc}
+            </div>
+            <ChevronRightIcon className="text-gray-400 h-[1.5em] group-hover:text-gray-800" />
+          </a>
+        </Link>
+      );
+    });
   }
 
   return (
     <>
       <div className="flex justify-between items-center">
         <h1 className="text-2xl">My Recipes</h1>
-        <button
-          className="rounded bg-blue-600 text-white px-3 py-1 hover:bg-blue-800 transition-colors"
-          onClick={handleNewRecipe}
-        >
-          New recipe
-        </button>
       </div>
-      <table className="drop-shadow bg-white w-full rounded-lg my-4">
-        <thead className="border-b">
-          <tr className="align-left text-left">
-            <th className="p-3">Name</th>
-            <th className="p-3">Link</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y">{tbody(recipes)}</tbody>
-      </table>
+      <div className="rounded border my-3 bg-white divide-y transition">
+        {list(recipes)}
+      </div>
+      <button className="btn btn-primary float-right" onClick={handleNewRecipe}>
+        New recipe
+      </button>
     </>
   );
 }

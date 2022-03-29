@@ -9,3 +9,17 @@ body {
 .form-none:focus {
   @apply shadow-none ring-0 border-gray-500;
 }
+
+@layer components {
+  .btn {
+    @apply px-6 py-2 rounded-lg border transition shadow-md hover:shadow-sm;
+  }
+
+  .btn-primary {
+    @apply text-white border-indigo-900 bg-indigo-600 hover:bg-indigo-800;
+  }
+
+  .link {
+    @apply text-indigo-600 transition-colors hover:text-indigo-800;
+  }
+}
