@@ -4,6 +4,7 @@ import IngredientField from "../../components/IngredientField";
 import { supabase } from "../../util/supabaseClient";
 import { ArrowSmLeftIcon } from "@heroicons/react/solid";
 import Link from "next/link";
+import ToggleInput from "../../components/ToggleInput";
 
 type SupabaseRecipe = {
   id: string;
@@ -158,7 +159,10 @@ export default function Recipe() {
           <div>Recipes</div>
         </a>
       </Link>
-      <h1 className="text-2xl mb-6">{recipe?.name}</h1>
+      <div className="flex justify-between mb-6">
+        <h1 className="text-2xl">{recipe?.name}</h1>
+        <ToggleInput></ToggleInput>
+      </div>
       <form onSubmit={handleSave}>
         <div className="pb-6">
           <label htmlFor="name" className="block mb-1">

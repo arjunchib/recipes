@@ -68,7 +68,7 @@ export default function Recipes() {
       <div className="flex justify-between items-center">
         <h1 className="text-2xl">My Recipes</h1>
       </div>
-      <div className="rounded border my-3 bg-white divide-y transition">
+      <div className="rounded-md my-3 bg-white divide-y divide-gray-500 transition border border-gray-500">
         {list(recipes)}
       </div>
       <button className="btn btn-primary float-right" onClick={handleNewRecipe}>
